@@ -7,6 +7,8 @@ from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 
 
+
+
 ## custom button to handle right-click and seen
 class CustomButton(QPushButton):   
     def __init__(self, parent=None):
