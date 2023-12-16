@@ -11,7 +11,7 @@ class Map(object):
         
         self.create_and_mines()
         self.game = self.get_numbers_()
-    
+
     
     # to create rows * cols grid with mines randomly placed
     def create_and_mines(self): 
@@ -61,15 +61,15 @@ if __name__ == "__main__":
     
     
     
-(open | cloes)
-if(open): print(count)
-if(cols): ""    
+# (open | cloes)
+# if(open): print(count)
+# if(cols): ""    
 
 
-while(user_cliks):
-    if it is in mine:
-        game Over
-    closed --> open    
-    if there is no hidden cell
-        he wins:
+# while(user_cliks):
+#     if it is in mine:
+#         game Over
+#     closed --> open    
+#     if there is no hidden cell
+#         he wins:
         
