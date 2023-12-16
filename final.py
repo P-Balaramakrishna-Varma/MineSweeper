@@ -7,6 +7,7 @@ from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import Qt
 
 
+## custom button to handle right-click and seen
 class CustomButton(QPushButton):   
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -28,40 +29,40 @@ class CustomButton(QPushButton):
                 pal.setColor(QPalette.Button, QColor(Qt.white))
                 self.setPalette(pal)
                 self.update()
+                self.flagged = False
             super().mousePressEvent(event)
 
 
 class Map(QWidget):
     def __init__(self, rows, cols, no_mines):
         super().__init__()
+        # state for the game
         self.rows = rows
         self.cols = cols
         self.no_mines = no_mines
         self.buttons = [[None for _ in range(cols)] for _ in range(rows)]
         self.grid = [[False for _ in range(cols)] for _ in range(rows)]
-
         self.create_and_mines()
         self.game = self.get_numbers_()
+        self.seen_count = 0
 
-        self.setWindowTitle("Minesweeper")
+        # Creatingthe gui
+        self.setWindowTitle("MineSweeper")
         self.map_layout = QGridLayout()
         self.map_layout.setSpacing(2)
         self.map_layout.setSizeConstraint(QGridLayout.SetFixedSize)
-
         self.init_map()
         self.setLayout(self.map_layout)
-        self.seen_count = 0
         
-
-
     def init_map(self):
         for x in range(0, self.rows):
             for y in range(0, self.cols):
+                # adding button with state
                 w = CustomButton()
                 w.setFixedSize(30, 30)
                 w.row = x
                 w.col = y
-                w.clicked.connect(self.trigger_start)
+                w.clicked.connect(self.user_click)
                 self.map_layout.addWidget(w, x, y)
                 self.buttons[x][y] = w
 
@@ -81,13 +82,7 @@ class Map(QWidget):
             for diffy in dis:
                 X = x + diffx
                 Y = y + diffy
-                if (
-                    X >= 0
-                    and Y >= 0
-                    and X < self.rows
-                    and Y < self.cols
-                    and self.grid[X][Y]
-                ):
+                if (X >= 0 and Y >= 0 and X < self.rows and Y < self.cols and self.grid[X][Y]):
                     count += 1
         if self.grid[x][y]:
             count -= 1
@@ -101,11 +96,13 @@ class Map(QWidget):
                 game[r][c] = self.no_adjacent_mines(r, c)
         return game
 
-    def trigger_start(self):
+    def user_click(self):
         button = self.sender()
         if not button.revealed:
             if self.grid[button.row][button.col]:
                 print("Game Over")
+                self.setWindowTitle("You Lost!")
+                time.sleep(1)
                 exit() # smooth exits
             else:
                 button.setText(str(self.game[button.row][button.col]))
@@ -113,15 +110,19 @@ class Map(QWidget):
                 self.seen_count += 1
                 if(self.seen_count == (self.rows * self.cols) - self.no_mines):
                     print("You win!")
+                    self.setWindowTitle("You Won!")
+                    time.sleep(1)
                     exit() # smooth exits
 
-    # Other methods...
     def print_grid(self):
+        print("Grid Vaules")
         for r in range(self.rows):
             for c in range(self.cols):
                 print(self.game[r][c], end=" ")
             print("")
+        print("\n")
         
+        print("Mines Locations")
         for r in range(self.rows):
             for c in range(self.cols):
                 print(self.grid[r][c], end=" ")
@@ -130,7 +131,7 @@ class Map(QWidget):
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    map = Map(2, 2, 1)
+    map = Map(5, 5, 1)
     map.show()
     map.print_grid()
     sys.exit(app.exec_())
